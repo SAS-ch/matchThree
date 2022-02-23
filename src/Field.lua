@@ -1,6 +1,5 @@
 --Base class of Field
 Field =  {
-map = {};
 potentialMatchCount = 0
 }
 --[[
@@ -10,19 +9,19 @@ Create a new instance of Field class
   geometry_opt - table {(X,Y),{X,Y}} - array of void point on a map
 ]]
 function Field:new (size, geometry_opt)
-  obj = {}
-  
+  local obj = {}
+  obj.map = {};
   self.__index = self;
   setmetatable (obj, self);
   obj.size = size;
-  self:fillZero(obj.map);
+  obj:fillZero(obj.map);
   return obj;
   end
 
 function Field:fillZero(map)
-for i = 0, size.Y-1 do
+for i = 0, self.size.Y-1 do
     local  _rows = {}
-    for j = 0, size.X-1 do
+    for j = 0, self.size.X-1 do
      table.insert (_rows,j,"A")
     end
     table.insert (map,i,_rows)
@@ -37,6 +36,8 @@ require ("Crystalls")
       self.map[i][j] = self:getRandomCrystallAtPoint(i,j);
     end
   end
+  self:checkForPotentialMatch();
+  if self.potentialMatchCount == 0 then self:fill(); end;
 end
 
 function Field:getRandomCrystallAtPoint (x,y) 
@@ -44,7 +45,7 @@ function Field:getRandomCrystallAtPoint (x,y)
   local candidate_is_good = false;
   while not candidate_is_good  do
   candidate = getRandomColor ();
-  candidate_is_good = not Field:isMakeThreeMatch(candidate,x,y)
+  candidate_is_good = not self:isMakeThreeMatch(candidate,x,y)
   end
   return candidate;
 end
@@ -91,7 +92,9 @@ end
 
 --[[Check for matching after make a move 
 @params: point_from - table {X,Y} the dot from crystal move
-            point_to - table {X,Y} the dot where crystal move]] 
+            point_to - table {X,Y} the dot where crystal move
+@return true if make match]] 
+      
 function Field:makePseudoChoise (point_from, point_to)
 --check for bounds
   if point_to.X>#(self.map)-1 or point_to.X<0 or point_to.Y<0 or point_to.Y>#(self.map[0]) -1 then return false end; 
