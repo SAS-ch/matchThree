@@ -35,7 +35,7 @@ function Field:fill ()
 
   for i = 0,#self.map do
     for j = 0, #self.map[0] do
-      print ("generate for i = "..i.." j="..j)
+     -- print ("generate for i = "..i.." j="..j)
       self.map[i][j] = self:getRandomCrystallAtPoint(i,j);
     end
   end
@@ -145,7 +145,7 @@ function Field:makeChoice (userCommand)
  return matching;
 end
 function Field:cancelChoice (userCommand)
-self.isHaveChange = false;
+  self.isHaveChange = false;
   local _temp_Crystal = self.map[userCommand.finishX][userCommand.finishY];
   self.map[userCommand.finishX][userCommand.finishY] = self.map[userCommand.startX][userCommand.startY];
   self.map[userCommand.startX][userCommand.startY] = _temp_Crystal;
@@ -154,10 +154,26 @@ self.isHaveChange = false;
 end
 
 function Field:tick ()
+--
 self.isHaveChange = false;
 for i = #self.map-1,0, -1 do
     for j = 0, #self.map[0] do
+     
       self.map [i][j]:tick();
+      
+    end
+end
+if not self.isHaveChange then self:fillVoid();
+  --there check for created matches
+ end
+end
+
+function Field:fillVoid ()
+for i = 0,#self.map do
+    for j = 0, #self.map[0] do
+        if self.map[i][j].isVoid then
+            self.map[i][j] = Crystal:getRandomCrystal({X=i,Y=j},self);
+        end
     end
 end
 end

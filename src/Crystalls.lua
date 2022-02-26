@@ -45,10 +45,13 @@ local crystal = self:new(Colors[0],position,field);
 return crystal;
 end
 function Crystal:tick()
-    if (self:getUnderCrystal().isVoid and not self.isVoid) then 
+    if self.position == {X=5, Y=4} then
+     print ("catch!"); end
+    if self:getUnderCrystal().isVoid and not self.isVoid then 
      local old_position = self.position;
+     local new_position = self:getUnderCrystal().position;
      self.field.map[self:getUnderCrystal().position.X][self:getUnderCrystal().position.Y] = self;
-     self.position = self:getUnderCrystal().position;
+     self.position = new_position; -- bug
       self.field.isHaveChange = true; 
       --TODO put on old place empty crystall
       void_crystal = Crystal:new (EmptyColor,old_position,self.field);

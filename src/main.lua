@@ -21,6 +21,7 @@ gamelogic = require ("GameLogick")
   while field.isHaveChange do 
    field:tick();
   end;
+  --field:fillVoid();
   Console:drawField(field);
   print ("debug");
  --[[ require ("Console");
