@@ -1,6 +1,7 @@
 UserCommand = {
 commandTypes = {
-"m"
+"m","q"
+
 },
 directionTypes = {
 "u","d","r","l"

@@ -34,6 +34,8 @@ for i = 1, #UserCommand.commandTypes do
   if command == UserCommand.commandTypes[i] then commandRight = true end;
 end
 if not commandRight then print ("Wrong command!"); return nil end;
+--in case exit command
+if command == UserCommand.commandTypes[2]then os.exit() end;
 --in case command = move
 if command == UserCommand.commandTypes[1] then
    xPos = tonumber (xPos);
