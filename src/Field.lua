@@ -15,6 +15,7 @@ function Field:new (size, geometry_opt)
   self.__index = self;
   setmetatable (obj, self);
   obj.size = size;
+  obj.isHaveChange = false;
   obj:fillZero(obj.map);
   return obj;
   end
@@ -123,6 +124,7 @@ function Field:makePseudoChoise (point_from, point_to)
 end
 
 function Field:makeChoice (userCommand)
+  self.isHaveChange = true;
  local _temp_Crystal = self.map[userCommand.finishX][userCommand.finishY];
  self.map[userCommand.finishX][userCommand.finishY] = self.map[userCommand.startX][userCommand.startY];
  self.map[userCommand.startX][userCommand.startY] = _temp_Crystal;
@@ -141,4 +143,21 @@ function Field:makeChoice (userCommand)
      matching[2] = match2
  end
  return matching;
+end
+function Field:cancelChoice (userCommand)
+self.isHaveChange = false;
+  local _temp_Crystal = self.map[userCommand.finishX][userCommand.finishY];
+  self.map[userCommand.finishX][userCommand.finishY] = self.map[userCommand.startX][userCommand.startY];
+  self.map[userCommand.startX][userCommand.startY] = _temp_Crystal;
+  self.map[userCommand.finishX][userCommand.finishY].position = {X = userCommand.finishX, Y = userCommand.finishY};
+  self.map[userCommand.startX][userCommand.startY].position = {X = userCommand.startX, Y = userCommand.startY};
+end
+
+function Field:tick ()
+self.isHaveChange = false;
+for i = #self.map-1,0, -1 do
+    for j = 0, #self.map[0] do
+      self.map [i][j]:tick();
+    end
+end
 end

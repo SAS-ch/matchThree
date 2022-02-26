@@ -14,8 +14,13 @@ gamelogic = require ("GameLogick")
   local ret = Console:readUserCommand(field);
   local match = field:makeChoice(ret)
   if match.match then print ("Good choice!") 
-  else print ("bad choice"); --cancel choice there
+  else print ("bad choice");
+       field:cancelChoice(ret); --cancel choice there
    end
+  Crystal:match(match);
+  while field.isHaveChange do 
+   field:tick();
+  end;
   Console:drawField(field);
   print ("debug");
  --[[ require ("Console");
