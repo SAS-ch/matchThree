@@ -8,6 +8,7 @@ Create a new instance of Field class
   size  - table {X,Y} if a field size
   geometry_opt - table {(X,Y),{X,Y}} - array of void point on a map
 ]]
+require ("Crystalls")
 function Field:new (size, geometry_opt)
   local obj = {}
   obj.map = {};
@@ -19,17 +20,18 @@ function Field:new (size, geometry_opt)
   end
 
 function Field:fillZero(map)
+require ("Crystalls")
 for i = 0, self.size.Y-1 do
     local  _rows = {}
     for j = 0, self.size.X-1 do
-     table.insert (_rows,j,"A")
+     table.insert (_rows,j,Crystal:getBaseCrystal({X=i,Y=j},self))
     end
     table.insert (map,i,_rows)
      end
 end
 --Initialize the field with random colors
 function Field:fill ()
-require ("Crystalls")
+
   for i = 0,#self.map do
     for j = 0, #self.map[0] do
       print ("generate for i = "..i.." j="..j)
@@ -41,33 +43,34 @@ require ("Crystalls")
 end
 
 function Field:getRandomCrystallAtPoint (x,y) 
- local candidate = getRandomColor ();
+ --local candidate = getRandomColor ();
+  local candidate = Crystal:getRandomCrystal({X=x,Y=y},self);
   local candidate_is_good = false;
   while not candidate_is_good  do
-  candidate = getRandomColor ();
+  candidate = Crystal:getRandomCrystal({X=x,Y=y},self);
   candidate_is_good = not self:isMakeThreeMatch(candidate,x,y)
   end
   return candidate;
 end
-
-function Field:isMakeThreeMatch (color, x,y)
+require ("Matching")
+function Field:isMakeThreeMatch (crystal, x,y)
 --Several case
 
---By X coordinate
-if self:isSame(color, x-2, y) and self:isSame(color, x-1, y) then return true end;
-if self:isSame(color, x+2, y) and self:isSame(color, x+1, y) then return true end;
-if self:isSame(color, x-1, y) and self:isSame(color, x+1, y) then return true end;
+--By X coordinate - vertical
+if self:isSame(crystal, x-2, y) and self:isSame(crystal, x-1, y) then return Match:new(MatchType[1],x-1,y,self) end;
+if self:isSame(crystal, x+2, y) and self:isSame(crystal, x+1, y) then return Match:new(MatchType[1],x+1,y,self) end;
+if self:isSame(crystal, x-1, y) and self:isSame(crystal, x+1, y) then return Match:new(MatchType[1],x,y,self) end;
 --By Y coordinate
-if self:isSame(color, x, y-2) and self:isSame(color, x, y-1) then return true end;
-if self:isSame(color, x, y+2) and self:isSame(color, x, y+1) then return true end;
-if self:isSame(color, x, y-1) and self:isSame(color, x, y+1) then return true end;
+if self:isSame(crystal, x, y-2) and self:isSame(crystal, x, y-1) then return Match:new(MatchType[2],x,y-1,self) end;
+if self:isSame(crystal, x, y+2) and self:isSame(crystal, x, y+1) then return Match:new(MatchType[2],x,y+1,self) end;
+if self:isSame(crystal, x, y-1) and self:isSame(crystal, x, y+1) then return Match:new(MatchType[2],x,y,self) end;
 
-return false;
+return nill;
 end
 
-function Field:isSame (color, x, y)
+function Field:isSame (crystal, x, y)
   if x>#(self.map) or x<0 or y<0 or y>#(self.map[0])  then return false end; -- check bound
-  if self.map[x][y]==color then 
+  if self.map[x][y].color==crystal.color then 
   return true;
   else
   return false
@@ -117,4 +120,25 @@ function Field:makePseudoChoise (point_from, point_to)
   self.map[point_to.X][point_to.Y] = self.map[point_from.X][point_from.Y];
   self.map[point_from.X][point_from.Y] = _temp_Crystal;
   return result;
+end
+
+function Field:makeChoice (userCommand)
+ local _temp_Crystal = self.map[userCommand.finishX][userCommand.finishY];
+ self.map[userCommand.finishX][userCommand.finishY] = self.map[userCommand.startX][userCommand.startY];
+ self.map[userCommand.startX][userCommand.startY] = _temp_Crystal;
+ self.map[userCommand.finishX][userCommand.finishY].position = {X = userCommand.finishX, Y = userCommand.finishY};
+ self.map[userCommand.startX][userCommand.startY].position = {X = userCommand.startX, Y = userCommand.startY};
+ local matching = {}
+ matching.match = false;
+ local match = self:isMakeThreeMatch(_temp_Crystal,userCommand.startX,userCommand.startY);
+ if match then
+     matching.match = true
+     matching[1] = match
+ end
+ local match2 =  self:isMakeThreeMatch(self.map[userCommand.finishX][userCommand.finishY],userCommand.finishX,userCommand.finishY);
+ if match2 then
+     matching.match = true
+     matching[2] = match2
+ end
+ return matching;
 end

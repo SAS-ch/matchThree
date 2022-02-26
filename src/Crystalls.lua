@@ -1,7 +1,7 @@
 
 --Base class for all Crystal type
 Crystal = {
-color = "no_color";
+--color = "no_color"; no way
 }
 
 --[[
@@ -9,11 +9,13 @@ Create a new Instance of Crystal class
 @param: 
   color - string representation of color [A-F]
 ]]
-function Crystal:new (color)
+function Crystal:new (color, position, field)
    obj = {}
    self.__index = self;
    setmetatable(obj,self);
-   obj.color = color or self.color;
+   obj.color = color;
+   obj.position = position;
+   obj.field = field;
    return obj;
    end
 
@@ -32,6 +34,11 @@ function getRandomColor ()
   return Colors[r];
 end
 
-function Crystal:getRandomCrystal ()
-return self:new(getRandomColor())
+function Crystal:getRandomCrystal (position,field)
+return self:new(getRandomColor(),position,field);
+end
+
+function Crystal:getBaseCrystal (position,field)
+local crystal = self:new(Colors[0],position,field);
+return crystal;
 end

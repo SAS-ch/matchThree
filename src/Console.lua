@@ -16,7 +16,7 @@ function Console:drawField (field)
    write (i.."|")
    for j = 0 , #field.map[0] do
     
-    write (field.map[i][j]);
+    write (field.map[i][j].color);
    end
   write ('\n');
   end
