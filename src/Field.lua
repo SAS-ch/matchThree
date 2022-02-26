@@ -165,9 +165,24 @@ for i = #self.map-1,0, -1 do
 end
 if not self.isHaveChange then self:fillVoid();
   --there check for created matches
+  self:checkAndMatch ();
  end
 end
-
+function Field:checkAndMatch ()
+for i = 0,#self.map do
+    for j = 0, #self.map[0] do
+        if not self.map[i][j].isVoid then
+            local match = self:isMakeThreeMatch (self.map[i][j], i,j)
+            if match then
+              local matching = {}
+              matching [1] = match;
+                  Crystal:match(matching);
+                  self.isHaveChange = true;
+            end;
+        end
+    end
+end
+end
 function Field:fillVoid ()
 for i = 0,#self.map do
     for j = 0, #self.map[0] do

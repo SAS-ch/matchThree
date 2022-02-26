@@ -63,6 +63,7 @@ function Crystal:getUnderCrystal ()
   return self.field.map[self.position.X+1][self.position.Y]
 end
 function Crystal:match(matching)
+ 
   if  matching[1]  then 
     for i = 1,  #matching[1].crystall_to_match do
         matching[1].crystall_to_match[i].isVoid = true;

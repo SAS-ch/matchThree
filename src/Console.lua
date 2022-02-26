@@ -24,6 +24,7 @@ function Console:drawField (field)
 
 function Console:readUserCommand (field)
 require ('UserCommand')
+print ("Enter command:")
 local line = io.read();
 local command, xPos, yPos, direction = splitStr(line," "); -- rename variable 
 ---check arg---
